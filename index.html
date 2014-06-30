@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+
+$.get("https://api.github.com/users/phiresky",function(response) {
+	document.write(JSON.stringify(response,null,3));
+});
+</script>
