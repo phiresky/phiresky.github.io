@@ -20,7 +20,8 @@
 	<div id="repos">Waiting for Javascript</div>
 </div>
 <script>
-$.get("https://api.github.com/users/phiresky/repos?sort=updated",function(repos) {
+var username=location.host.split(".")[0];
+$.get("https://api.github.com/users/"+username+"/repos?sort=updated",function(repos) {
 	var owner=repos[0].owner;
 	$("h1").prepend("<img height=39 src='"+owner.avatar_url+"'> ");
 	var contents=repos.map(function(repo) {
