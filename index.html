@@ -1,35 +1,52 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>My public GitHub repositories</title>
-<link rel=stylesheet href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel=stylesheet href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<style>
+	.grayed {
+		color:gray;
+	}
+	.smaller {
+		font-size:70%;
+	}
+</style>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js"></script>
 <div class="container">
-	<h1>My public github repositories</h1>
+	<h1><span id='avatar'></span> My public github repositories</h1>
 	<hr>
+	<div id="repos">Waiting for Javascript</div>
 </div>
 <script>
-/** https://github.com/csnover/js-iso8601 */(function(n,f){var u=n.parse,c=[1,4,5,6,7,10,11];n.parse=function(t){var i,o,a=0;if(o=/^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(t)){for(var v=0,r;r=c[v];++v)o[r]=+o[r]||0;o[2]=(+o[2]||1)-1,o[3]=+o[3]||1,o[8]!=="Z"&&o[9]!==f&&(a=o[10]*60+o[11],o[9]==="+"&&(a=0-a)),i=n.UTC(o[1],o[2],o[3],o[4],o[5]+a,o[6],o[7])}else i=u?u(t):NaN;return i}})(Date)/** https://github.com/csnover/js-iso8601 */(function(n,f){var u=n.parse,c=[1,4,5,6,7,10,11];n.parse=function(t){var i,o,a=0;if(o=/^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(t)){for(var v=0,r;r=c[v];++v)o[r]=+o[r]||0;o[2]=(+o[2]||1)-1,o[3]=+o[3]||1,o[8]!=="Z"&&o[9]!==f&&(a=o[10]*60+o[11],o[9]==="+"&&(a=0-a)),i=n.UTC(o[1],o[2],o[3],o[4],o[5]+a,o[6],o[7])}else i=u?u(t):NaN;return i}})(Date)
-</script>
-<script>
 
-$.get("https://api.github.com/users/phiresky/repos",function(repos) {
-	repos.sort(function(repo1,repo2){return Date.parse(repo1.updated_at)<Date.parse(repo2.updated_at)});
-	var names=repos.map(function(repo) {
+$.get("https://api.github.com/users/phiresky/repos?sort=updated",function(repos) {
+	var owner=repos[0].owner;
+	$("#avatar").append("<img height=39 src='"+owner.avatar_url+"'>");
+	//repos.sort(function(repo1,repo2){return Date.parse(repo1.updated_at)<Date.parse(repo2.updated_at)});
+	var contents=repos.map(function(repo) {
 		//return //$("<div>").append($("<h2>").append($("<a>").attr("href",repo.html_url).text(repo.name))).append($("<p>").text(repo.description));
-		var div=$("<div><h2>"+repo.name+"</a></h2>"+"<p>"+repo.description+"</p>");
-		var ul=$("<ul><li>"+
+		var div=$("<div><h2>"+repo.name+"</h2>"+"<p>"+repo.description+"</p>");
+		var ul=$("<ul class='list-unstyled'><li>"+
 			"<a href='"+repo.html_url+"'>Source code</a>"+
 			"</ul>").appendTo(div);
 		if(repo.homepage) {
 			ul.append("<li><a href='"+repo.homepage+"'>"+(repo.homepage.indexOf("github.io")>0?"Hosted Version":"Homepage")+"</a>");
 		}
+		if(repo.fork) {
+			$(div).children("h2").append(" <span class='grayed smaller'>(forked)</span>");
+		}
+		var infoarr=[];
+		infoarr.push("Updated "+moment(repo.updated_at).fromNow());
+		if(repo.language) infoarr.push(repo.language);
+		if(repo.size) infoarr.push(repo.size+" Lines");
+		if(repo.stargazers_count) infoarr.push(repo.stargazers_count+" Stars");
+		infoarr.push("Created on "+moment(repo.created_at).format("YYYY-MM-DD"))
+		$(div).append($("<span class='grayed'>").text(infoarr.join(' | ')));
+
 		return div;
 	});
-	$("div.container").append(names);
-	console.log(names);
-
-	
+	$("#repos").replaceWith(contents);
 });
 </script>
