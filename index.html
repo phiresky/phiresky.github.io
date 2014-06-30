@@ -15,18 +15,15 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js"></script>
 <div class="container">
-	<h1><span id='avatar'></span> My public github repositories</h1>
+	<h1>My public github repositories</h1>
 	<hr>
 	<div id="repos">Waiting for Javascript</div>
 </div>
 <script>
-
 $.get("https://api.github.com/users/phiresky/repos?sort=updated",function(repos) {
 	var owner=repos[0].owner;
-	$("#avatar").append("<img height=39 src='"+owner.avatar_url+"'>");
-	//repos.sort(function(repo1,repo2){return Date.parse(repo1.updated_at)<Date.parse(repo2.updated_at)});
+	$("h1").prepend("<img height=39 src='"+owner.avatar_url+"'> ");
 	var contents=repos.map(function(repo) {
-		//return //$("<div>").append($("<h2>").append($("<a>").attr("href",repo.html_url).text(repo.name))).append($("<p>").text(repo.description));
 		var div=$("<div><h2>"+repo.name+"</h2>"+"<p>"+repo.description+"</p>");
 		var ul=$("<ul class='list-unstyled'><li>"+
 			"<a href='"+repo.html_url+"'>Source code</a>"+
@@ -43,8 +40,8 @@ $.get("https://api.github.com/users/phiresky/repos?sort=updated",function(repos)
 		if(repo.size) infoarr.push(repo.size+" Lines");
 		if(repo.stargazers_count) infoarr.push(repo.stargazers_count+" Stars");
 		infoarr.push("Created on "+moment(repo.created_at).format("YYYY-MM-DD"))
-		$(div).append($("<span class='grayed'>").text(infoarr.join(' | ')));
-
+		div.append($("<span class='grayed'>").text(infoarr.join(' | ')));
+		div.append("<hr>");
 		return div;
 	});
 	$("#repos").replaceWith(contents);
