@@ -1,7 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>My public GitHub repositories</title>
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel=stylesheet href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <style>
@@ -20,128 +19,55 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 <div class="container">
-	<h1>My public github repositories</h1>
+<script id="repos" type=λ>
+	<h1><img height=39 src='λ(repos[0].owner.avatar_url)'> My public github repositories</h1>
 	Automatically generated using <a href="https://github.com/phiresky/phiresky.github.io">itself</a>
 	<hr>
-	<div id="repos">Waiting for Javascript</div>
+	<div>
+		λrepos->(
+		<div class="entry">
+			<div class='content'>
+				<h2>λname λfork?(<span class='grayed smaller'>(forked)</span>)</h2>
+				<p>λdescription</p>
+			</div>
+			<ul class='list-unstyled'>
+				<li><a href='λhtml_url'>Source Code</a>
+				λhomepage?(<li><a href='λhomepage'>λhomepage.indexOf("github.io")?(Hosted Version):(Homepage)</a>)
+				<li><a href='#' onclick='readme(this, "λurl");return false'>Load complete readme</a>
+			</ul>
+			<span class=grayed>λfooters.join(' | ')</span>
+			<hr>
+		</div>)
+	</div>
 </div>
+</script>
+<script src="lam_fill/λ.js"></script>
 <script>
 var username=location.host.split(".")[0]||"phiresky";
+function readme(self, url) {
+	ele = $(self).parents(".entry");
+	$.getJSON(url+"/readme",function(readme){
+		ele.find("div.content").replaceWith($("<div class='content well'>").html(marked(b64dec(readme.content.replace(/\n/g,"")))));
+		ele.find("h1").addClass("h2");
+	});
+	$(self).remove();
+}
+
 $.get("https://api.github.com/users/"+username+"/repos?sort=updated",function(repos) {
-	var owner=repos[0].owner;
-	$("h1").prepend("<img height=39 src='"+owner.avatar_url+"'> ");
-	var contents=repos.map(function(repo) {
-		var div=$("<div><div class='content'><h2>"+repo.name+"</h2>"+"<p>"+repo.description+"</p></div></div>");
-		var ul=$("<ul class='list-unstyled'><li>"+
-			"<a href='"+repo.html_url+"'>Source code</a>"+
-			"</ul>").appendTo(div);
-		if(repo.homepage) {
-			ul.append("<li><a href='"+repo.homepage+"'>"+(repo.homepage.indexOf("github.io")>0?"Hosted Version":"Homepage")+"</a>");
-		}
-		ul.append($("<li>").append($("<a href>Load complete readme</a>").click(function(e) {
-			$.getJSON(repo.url+"/readme",function(readme){
-				console.log(_a=readme);
-				div.children("div.content").replaceWith($("<div class='content well'>").html(marked(B64.decode(readme.content.replace(/\n/g,"")))));
-				div.children("div.content").find("h1").addClass("h2");
-			});
-			return false;
-		})));
-		if(repo.fork) {
-			$(div).children("h2").append(" <span class='grayed smaller'>(forked)</span>");
-		}
+	_a=repos;
+	repos.forEach(function(repo) {
 		var infoarr=[];
 		infoarr.push("Updated "+moment(repo.updated_at).fromNow());
 		if(repo.language) infoarr.push(repo.language);
 		if(repo.size) infoarr.push(repo.size+" Lines");
 		if(repo.stargazers_count) infoarr.push(repo.stargazers_count+" Stars");
 		infoarr.push("Created on "+moment(repo.created_at).format("YYYY-MM-DD"))
-		div.append($("<span class='grayed'>").text(infoarr.join(' | ')));
-		div.append("<hr>");
-		return div;
+		repo.footers = infoarr;
 	});
-	$("#repos").replaceWith(contents);
+	λ_fill.inplace("repos",{repos:repos});
 });
 </script>
-<script>
-/*
-Copyright Vassilis Petroulias [DRDigit]
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-var B64 = {
-    alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
-    lookup: null,
-    ie: /MSIE /.test(navigator.userAgent),
-    ieo: /MSIE [67]/.test(navigator.userAgent),
-    decode: function (s) {
-        if (s.length % 4)
-            throw new Error("InvalidCharacterError: 'B64.decode' failed: The string to be decoded is not correctly encoded.");
-        var buffer = B64.fromUtf8(s),
-            position = 0,
-            len = buffer.length;
-        if (B64.ieo) {
-            var result = [];
-            while (position < len) {
-                if (buffer[position] < 128) 
-                    result.push(String.fromCharCode(buffer[position++]));
-                else if (buffer[position] > 191 && buffer[position] < 224) 
-                    result.push(String.fromCharCode(((buffer[position++] & 31) << 6) | (buffer[position++] & 63)));
-                else 
-                    result.push(String.fromCharCode(((buffer[position++] & 15) << 12) | ((buffer[position++] & 63) << 6) | (buffer[position++] & 63)));
-            }
-            return result.join('');
-        } else {
-            var result = '';
-            while (position < len) {
-                if (buffer[position] < 128) 
-                    result += String.fromCharCode(buffer[position++]);
-                else if (buffer[position] > 191 && buffer[position] < 224) 
-                    result += String.fromCharCode(((buffer[position++] & 31) << 6) | (buffer[position++] & 63));
-                else 
-                    result += String.fromCharCode(((buffer[position++] & 15) << 12) | ((buffer[position++] & 63) << 6) | (buffer[position++] & 63));
-            }
-            return result;
-        }
-    },
-    fromUtf8: function (s) {
-        var position = -1,
-            len, buffer = [],
-            enc = [, , , ];
-        if (!B64.lookup) {
-            len = B64.alphabet.length;
-            B64.lookup = {};
-            while (++position < len)
-                B64.lookup[B64.alphabet.charAt(position)] = position;
-            position = -1;
-        }
-        len = s.length;
-        while (++position < len) {
-            enc[0] = B64.lookup[s.charAt(position)];
-            enc[1] = B64.lookup[s.charAt(++position)];
-            buffer.push((enc[0] << 2) | (enc[1] >> 4));
-            enc[2] = B64.lookup[s.charAt(++position)];
-            if (enc[2] == 64) 
-                break;
-            buffer.push(((enc[1] & 15) << 4) | (enc[2] >> 2));
-            enc[3] = B64.lookup[s.charAt(++position)];
-            if (enc[3] == 64) 
-                break;
-            buffer.push(((enc[2] & 3) << 6) | enc[3]);
-        }
-        return buffer;
-    }
-};
-</script>
+<script src="b64dec.js"></script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
