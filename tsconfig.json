@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "system",
+        "target": "es5",
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "jsx": "react"
+    },
+    "files": [
+        "lazy.tsx",
+        "typings/browser.d.ts"
+    ]
+}
