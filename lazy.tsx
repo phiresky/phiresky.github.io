@@ -42,7 +42,6 @@ function getFooters(repo: RepoApi) {
     const footers: string[] = [];
     footers.push("Updated " + moment(repo.updated_at).fromNow());
     if (repo.language) footers.push(repo.language);
-    if (repo.size) footers.push(repo.size + " Lines");
     if (repo.stargazers_count) footers.push(repo.stargazers_count + " Stars");
     footers.push("Created on " + moment(repo.created_at).format("YYYY-MM-DD"))
     return footers;
