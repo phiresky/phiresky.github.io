@@ -25,7 +25,7 @@ const ReposList = ({repos = [] as RepoApi[]}) => (
 const LazyHomepage = ({username, repos, error}: LazyProps) => (
     <div>
         <button className="btn btn-default btn-sm pull-right" onClick={e => { e.preventDefault(); loadUser(prompt("Enter username")||"phiresky") } }>Change User</button>
-        <h1><img height={39} width={39} src={repos && repos[0] ? repos[0].owner.avatar_url : ""} /> {username}'s public GitHub repositories</h1>
+        <h1><a href={`https://github.com/${username}`}><img height={39} width={39} src={repos && repos[0] ? repos[0].owner.avatar_url : ""} /> {username}</a>'s public GitHub repositories</h1>
         <p>Automatically generated using <a href="https://github.com/phiresky/phiresky.github.io">itself</a>.</p>
         <hr/>
         {error ? <div className="alert alert-danger">{error}</div> : ReposList({repos}) }
