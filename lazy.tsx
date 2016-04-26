@@ -15,7 +15,7 @@ const ReposList = ({repos = [] as RepoApi[]}) => (
                 </div>
                 <ul className='list-unstyled'>
                     <li><a href={repo.html_url}>Source Code</a></li>
-                    {repo.homepage ? <li><a href={repo.homepage}>{repo.homepage.indexOf("github.io") ? "Hosted Version" : "Homepage"}</a></li> : ""}
+                    {repo.homepage ? <li><a href={repo.homepage}>{repo.homepage.indexOf("github.io")>=0 ? "Hosted Version" : "Homepage"}</a></li> : ""}
                 </ul>
                 <span className="grayed">{getFooters(repo).join(' | ') }</span>
                 <hr/>
